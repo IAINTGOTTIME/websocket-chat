@@ -1,0 +1,20 @@
+services:
+  api:
+    restart: on-failure
+    depends_on:
+      - db
+    container_name: api
+    build:
+      dockerfile: Dockerfile
+  db:
+    container_name: db
+    image: postgres:15.1
+    environment:
+      - POSTGRES_DB=mantella
+      - POSTGRES_USER=mantella
+      - POSTGRES_PASSWORD=mantella123321
+    ports:
+      - 5432:5432
+
+
+
