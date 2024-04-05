@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-
 from db.settings import DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
 
 engine = create_engine(

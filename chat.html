@@ -13,18 +13,35 @@
         <ul id='messages'>
         </ul>
         <script>
-            var client_id = Date.now()
-            document.querySelector("#ws-id").textContent = client_id;
-            var ws = new WebSocket(`ws://localhost:8000/v1/chat/ws/${client_id}`);
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('li')
-                var content = document.createTextNode(event.data)
+            async function getLastMessages() {
+                const url = 'http://localhost:8000/v1/chat/message'
+                const response = await fetch(url)
+                return response
+            }
+
+            getLastMessages()
+                .then(messages => {
+                    messages.forEach(msg => {
+                        appendMessage(msg.message)
+                    })
+                appendMessage("\n New message")
+            })
+
+            function appendMessage(msg) {
+                let messages = document.getElementById('messages')
+                let message = document.createElement('li')
+                let content = document.createTextNode(msg)
                 message.appendChild(content)
                 messages.appendChild(message)
+            }
+            let client_id = Date.now()
+            document.querySelector("#ws-id").textContent = client_id;
+            let ws = new WebSocket(`ws://localhost:8000/v1/chat/ws/${client_id}`);
+            ws.onmessage = function(event) {
+                appendMessage(event.data)
             };
             function sendMessage(event) {
-                var input = document.getElementById("messageText")
+                let input = document.getElementById("messageText")
                 ws.send(input.value)
                 input.value = ''
                 event.preventDefault()

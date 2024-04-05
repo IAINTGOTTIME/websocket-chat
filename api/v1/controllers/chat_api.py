@@ -1,10 +1,11 @@
 import os
+from typing import List
+
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
-
-from db.models.massage_model import MessageOrm
-from services.massege_servise import add_message_db
+from services.massege_servise import add_message_db, get_all_message
 
 from db.engine import get_db
 
@@ -19,6 +20,16 @@ with open(os.path.join(root, "chat.html"), "r") as file:
 @chat.get("/")
 def get_html():
     return HTMLResponse(html)
+
+
+class Message(BaseModel):
+    id: int
+    message: str
+
+
+@chat.get("/message", response_model=List[Message])
+def get_message(db: Session = Depends(get_db)):
+    return get_all_message(db=db)
 
 
 class ConnectionManager:
@@ -36,13 +47,6 @@ class ConnectionManager:
         add_message_db(message=message, db=db)
         for connection in self.active_connections:
             await connection.send_text(message)
-
-    # @staticmethod
-    # def add_message_db(message: str, db: Session):
-    #     new_message = MessageOrm(message=message)
-    #     db.add(new_message)
-    #     db.commit()
-    #     return
 
 
 manager = ConnectionManager()

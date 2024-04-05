@@ -1,4 +1,14 @@
+version: "3.12"
 services:
+  db:
+    container_name: db
+    image: postgres:16.2
+    environment:
+      - POSTGRES_DB=mantella
+      - POSTGRES_USER=mantella
+      - POSTGRES_PASSWORD=mantella123321
+    ports:
+      - 5432:5432
   api:
     restart: on-failure
     depends_on:
@@ -6,15 +16,5 @@ services:
     container_name: api
     build:
       dockerfile: Dockerfile
-  db:
-    container_name: db
-    image: postgres:15.1
-    environment:
-      - POSTGRES_DB=mantella
-      - POSTGRES_USER=mantella
-      - POSTGRES_PASSWORD=mantella123321
     ports:
-      - 5432:5432
-
-
-
+      - 8080:8000
