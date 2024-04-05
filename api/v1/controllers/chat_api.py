@@ -1,12 +1,10 @@
 import os
 from typing import List
-
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from services.massege_servise import add_message_db, get_all_message
-
 from db.engine import get_db
 
 chat = APIRouter(prefix="/chat",
