@@ -1,37 +1,52 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket Chat</h1>
-        <h2>Your ID: <span id="ws-id"></span></h2>
-        <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages'>
-        </ul>
-        <script>
-            function appendMessage(msg) {
-                let messages = document.getElementById('messages')
-                let message = document.createElement('li')
-                let content = document.createTextNode(msg)
-                message.appendChild(content)
-                messages.appendChild(message)
-            }
-            let client_id = Date.now()
-            document.querySelector("#ws-id").textContent = client_id;
-            let ws = new WebSocket(`ws://localhost:8000/v1/chat/ws/${client_id}`);
-            ws.onmessage = function(event) {
-                appendMessage(event.data)
-            };
-            function sendMessage(event) {
-                let input = document.getElementById("messageText")
-                ws.send(input.value)
-                input.value = ''
-                event.preventDefault()
-            }
-        </script>
-    </body>
+<head>
+    <title>Chat</title>
+</head>
+<body>
+<h1>WebSocket Chat</h1>
+<h2>Your ID: <span id="ws-id"></span></h2>
+<ul id='messages'>
+</ul>
+<script>
+    async function getAllMessage() {
+        const url = 'http://127.0.0.1:8080/v1/chat/message'
+        const response = await fetch(url,{
+            method:'GET'
+        })
+        return await response.json()
+    }
+
+    getAllMessage()
+        .then(messages => {
+            messages.forEach(msg => {
+                 appendMessage(msg.message)
+            })
+        appendMessage('\nNew message')
+        })
+
+    function appendMessage(msg) {
+        let messages = document.getElementById('messages')
+        let message = document.createElement('li')
+        let content = document.createTextNode(msg)
+        message.appendChild(content)
+        messages.appendChild(message)
+    }
+    let client_id = Date.now()
+    document.querySelector("#ws-id").textContent = client_id;
+    let ws = new WebSocket(`ws://localhost:8080/v1/chat/ws/${client_id}`);
+    ws.onmessage = function(event) {
+        appendMessage(event.data)
+    };
+    function sendMessage(event) {
+        let input = document.getElementById("messageText")
+        ws.send(input.value)
+        input.value = ''
+        event.preventDefault()
+    }
+</script>
+<form action="" onsubmit="sendMessage(event)">
+    <input type="text" id="messageText" autocomplete="off"/>
+    <button>Send</button>
+</form></body>
 </html>
